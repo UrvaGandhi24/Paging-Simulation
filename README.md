@@ -1,4 +1,4 @@
-# Operating Systems Paging Simulation
+# Paging Simulation - Operating System Project
 
 This project implements a paging simulation for Operating Systems, demonstrating how memory management works in modern operating systems.
 
