@@ -1,25 +1,42 @@
 # Paging Simulation - Operating System Project
 
-This project implements a paging simulation for Operating Systems, demonstrating how memory management works in modern operating systems.
-
-## Project Structure
-- `paging_simulation_old/` - Contains the main simulation code
-- `paging_simulation_without-pra.html` - Web-based simulation interface
-- `23BCE078_New_OS_Assignment.pdf` - Project documentation and requirements
+A web-based simulation tool for understanding memory paging in operating systems. This interactive tool allows users to visualize and experiment with virtual memory paging concepts.
 
 ## Features
-- Interactive paging simulation
-- Visual representation of memory management
-- Page replacement algorithm demonstration
+
+- Interactive paging table configuration
+- Virtual to physical address translation
+- Binary and decimal number format support
+- Visual representation of memory mappings
+- Detailed calculation steps
+- Responsive design for all devices
+
+## Usage
+
+1. Configure the paging table:
+   - Set frame size (in bytes)
+   - Set total number of frames
+   - Set total virtual pages
+   - Define initial page mappings
+
+2. Enter a virtual address to:
+   - See the translation process
+   - View physical address calculation
+   - Check for page faults
+   - Visualize memory mappings
 
 ## Technologies Used
-- HTML
+
+- HTML5
+- CSS3
 - JavaScript
-- CSS
+- Modern CSS features (CSS Variables, Flexbox, Grid)
+- Responsive Design
 
-## Getting Started
-1. Open `paging_simulation_without-pra.html` in a web browser
-2. Follow the on-screen instructions to run the simulation
+## Contributors
 
-## Author
-- Juhi (23BCE078) 
+- Urva Gandhi
+
+## License
+
+This project is open source and available under the MIT License. 
