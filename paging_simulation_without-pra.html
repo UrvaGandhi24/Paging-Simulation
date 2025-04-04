@@ -1,1673 +1,1400 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paging Simulation</title>
-    <link rel="icon" type="image/png" href="https://imgs.search.brave.com/XnFPHX-aMWS7J86ljryAPXZ0rLm5M7ygLB8SVzznEvQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzEzLzIzLzY5LzEz/LzM2MF9GXzEzMjM2/OTEzMTlfa29kV0dK/MnFRRG5hdXYzTXlo/RUFLQWpLaThaYThH/UU4uanBn">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #8B1D2C;
-            --primary-hover: #6B1722;
-            --secondary-color: #C02739;
-            --error-color: #ef4444;
-            --success-color: #10b981;
-            --background: #f8fafc;
-            --card-bg: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
-            --highlight-bg: rgba(139, 29, 44, 0.1);
-            --highlight-border: rgba(139, 29, 44, 0.2);
-            --gradient-start: #8B1D2C;
-            --gradient-end: #C02739;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Verdana';
-        }
-
-        body {
-            background-color: var(--background);
-            padding: 2rem;
-            color: var(--text-primary);
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: var(--card-bg);
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            transition: transform 0.3s ease;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: 2.5rem;
-            font-weight: 700;
-            font-family: 'Architects Daughter';
-            background: linear-gradient(
-                270deg,
-                #ff0000,
-                #ff8000,
-                #ffff00,
-                #80ff00,
-                #00ff00,
-                #00ff80,
-                #00ffff,
-                #0080ff,
-                #0000ff,
-                #8000ff,
-                #ff00ff,
-                #ff0080
-            );
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: rainbow 10s linear infinite;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        @keyframes rainbow {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        /* Optional: Add a glow effect */
-        h1:hover {
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
-            transform: scale(1.02);
-            transition: all 0.3s ease;
-        }
-
-        .input-section {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-            padding: 2rem;
-            background: var(--background);
-            border-radius: 0.75rem;
-            box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
-            position: relative;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            width: 100%;
-        }
-
-        .input-group label {
-            font-weight: 500;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        input[type="text"] {
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--border-color);
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            width: 250px;
-            transition: all 0.3s ease;
-            background: var(--card-bg);
-            color: var(--text-primary);
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px var(--highlight-bg);
-        }
-
-        .btn {
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(139, 29, 44, 0.2);
-        }
-
-        .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px rgba(139, 29, 44, 0.3);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .number-format-toggle {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            margin-bottom: 2rem;
-            justify-content: center;
-            background: var(--background);
-            padding: 0.5rem;
-            border-radius: 0.75rem;
-        }
-
-        .toggle-btn {
-            padding: 0.625rem 1.25rem;
-            border: 2px solid var(--primary-color);
-            background-color: transparent;
-            color: var(--primary-color);
-            cursor: pointer;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .toggle-btn.active {
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            color: white;
-            border: none;
-            box-shadow: 0 2px 4px rgba(139, 29, 44, 0.3);
-        }
-
-        .toggle-btn:hover:not(.active) {
-            background: var(--highlight-bg);
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .tables-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .table-wrapper {
-            background-color: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .table-wrapper:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        }
-
-        .table-wrapper h3 {
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 1rem;
-        }
-
-        th,
-        td {
-            padding: 1rem;
-            text-align: center;
-            border: 1px solid var(--border-color);
-        }
-
-        th {
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            color: white;
-            font-weight: 500;
-        }
-
-        th:first-child {
-            border-top-left-radius: 0.5rem;
-        }
-
-        th:last-child {
-            border-top-right-radius: 0.5rem;
-        }
-
-        tr:last-child td:first-child {
-            border-bottom-left-radius: 0.5rem;
-        }
-
-        tr:last-child td:last-child {
-            border-bottom-right-radius: 0.5rem;
-        }
-
-        tbody tr {
-            transition: all 0.3s ease;
-        }
-
-        tbody tr:hover {
-            background-color: var(--background);
-        }
-
-        tr[id^="virtual-row-"].highlighted,
-        tr[id^="physical-row-"].highlighted {
-            background-color: rgba(79, 70, 229, 0.1);
-            transform: scale(1.02);
-        }
-
-        .error-message,
-        .success-message {
-            text-align: center;
-            margin-top: 1rem;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            animation: slideIn 0.3s ease;
-        }
-
-        .error-message {
-            color: var(--error-color);
-            background-color: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .success-message {
-            color: var(--success-color);
-            background-color: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .page-fault-notification {
-            position: absolute;
-            right: 2rem;
-            top: 1.5rem;
-            transform: none;
-            padding: 1rem 1.5rem;
-            background-color: rgba(239, 68, 68, 0.1);
-            border: 2px solid var(--error-color);
-            border-radius: 0.75rem;
-            color: var(--error-color);
-            font-weight: 600;
-            animation: slideInTop 0.3s ease;
-            display: none;
-            max-width: 400px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            z-index: 100;
-        }
-
-        .page-fault-notification.show {
-            display: block;
-        }
-
-        .pra-section {
-            margin: 2rem 0;
-            padding: 1.5rem;
-            background-color: #fffbeb;
-            border-radius: 0.75rem;
-            border: 1px solid var(--secondary-color);
-            display: none;
-            animation: slideIn 0.3s ease;
-        }
-
-        .pra-section h3 {
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .pra-algorithms {
-            display: flex;
-            gap: 1rem;
-            margin: 1rem 0;
-            flex-wrap: wrap;
-        }
-
-        .pra-btn {
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .pra-btn:hover {
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            color: white;
-            border: none;
-        }
-
-        .pra-visualization {
-            margin-top: 1rem;
-            padding: 1.5rem;
-            background-color: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            animation: fadeIn 0.5s ease;
-        }
-
-        .memory-state {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1rem;
-            margin: 1.5rem 0;
-            padding: 1rem;
-            background: var(--background);
-            border-radius: 0.5rem;
-        }
-
-        .memory-slot {
-            padding: 1rem;
-            background-color: white;
-            border-radius: 0.5rem;
-            text-align: center;
-            border: 2px solid var(--border-color);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .memory-slot::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--primary-color);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .memory-slot.replaced::before {
-            background: var(--error-color);
-            transform: scaleX(1);
-        }
-
-        .memory-slot.new::before {
-            background: var(--success-color);
-            transform: scaleX(1);
-        }
-
-        .memory-slot.replaced {
-            animation: shake 0.5s ease;
-            background-color: rgba(239, 68, 68, 0.1);
-            border-color: var(--error-color);
-        }
-
-        .memory-slot.new {
-            animation: pulse 0.5s ease;
-            background-color: rgba(16, 185, 129, 0.1);
-            border-color: var(--success-color);
-        }
-
-        .algorithm-details {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background: var(--background);
-            border-radius: 0.5rem;
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .algorithm-details h4 {
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .algorithm-details ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .algorithm-details li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .algorithm-details li:last-child {
-            border-bottom: none;
-        }
-
-        .algorithm-details li::before {
-            content: '•';
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-
-        .access-history {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-            padding: 0.5rem;
-            background: white;
-            border-radius: 0.5rem;
-            border: 1px solid var(--border-color);
-        }
-
-        .access-item {
-            padding: 0.25rem 0.75rem;
-            background: var(--background);
-            border-radius: 1rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            transition: all 0.3s ease;
-        }
-
-        .access-item.active {
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            color: white;
-        }
-
-        @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Paging Simulation</title>
+        <link rel="icon" type="image/png"
+            href="https://imgs.search.brave.com/XnFPHX-aMWS7J86ljryAPXZ0rLm5M7ygLB8SVzznEvQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzEzLzIzLzY5LzEz/LzM2MF9GXzEzMjM2/OTEzMTlfa29kV0dK/MnFRRG5hdXYzTXlo/RUFLQWpLaThaYThH/UU4uanBn">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
+        <style>
+            :root {
+                --primary-color: #8B1D2C;
+                --primary-hover: #6B1722;
+                --secondary-color: #C02739;
+                --error-color: #ef4444;
+                --success-color: #10b981;
+                --background: #f8fafc;
+                --card-bg: #ffffff;
+                --text-primary: #1e293b;
+                --text-secondary: #64748b;
+                --border-color: #e2e8f0;
+                --highlight-bg: rgba(139, 29, 44, 0.1);
+                --highlight-border: rgba(139, 29, 44, 0.2);
+                --gradient-start: #8B1D2C;
+                --gradient-end: #C02739;
             }
 
-            25% {
-                transform: translateX(-5px);
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+                font-family: 'Verdana';
             }
 
-            75% {
-                transform: translateX(5px);
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .pra-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .stat-card {
-            padding: 1rem;
-            background: white;
-            border-radius: 0.5rem;
-            border: 1px solid var(--border-color);
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin: 0.5rem 0;
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(-50%);
-            }
-        }
-
-        @keyframes slideOut {
-            from {
-                opacity: 1;
-                transform: translateY(-50%);
-            }
-
-            to {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-        }
-
-        @media (max-width: 768px) {
             body {
-                padding: 1rem;
+                background-color: var(--background);
+                padding: 2rem;
+                color: var(--text-primary);
+                min-height: 100vh;
             }
 
             .container {
-                padding: 1rem;
+                max-width: 1200px;
+                margin: 0 auto;
+                background-color: var(--card-bg);
+                padding: 2rem;
+                border-radius: 1rem;
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+                transition: transform 0.3s ease;
             }
 
-            .tables-container {
-                grid-template-columns: 1fr;
+            h1 {
+                text-align: center;
+                margin-bottom: 2rem;
+                font-size: 2.5rem;
+                font-weight: 700;
+                font-family: 'Architects Daughter';
+                background: linear-gradient(270deg,
+                        #ff0000,
+                        #ff8000,
+                        #ffff00,
+                        #80ff00,
+                        #00ff00,
+                        #00ff80,
+                        #00ffff,
+                        #0080ff,
+                        #0000ff,
+                        #8000ff,
+                        #ff00ff,
+                        #ff0080);
+                background-size: 200% auto;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                animation: rainbow 10s linear infinite;
+                letter-spacing: -0.5px;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            @keyframes rainbow {
+                0% {
+                    background-position: 0% 50%;
+                }
+
+                50% {
+                    background-position: 100% 50%;
+                }
+
+                100% {
+                    background-position: 0% 50%;
+                }
+            }
+
+            /* Optional: Add a glow effect */
+            h1:hover {
+                filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+                transform: scale(1.02);
+                transition: all 0.3s ease;
+            }
+
+            .input-section {
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+                padding: 2rem;
+                background: var(--background);
+                border-radius: 0.75rem;
+                box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+                position: relative;
+            }
+
+            .input-group {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+            }
+
+            .input-group label {
+                font-weight: 500;
+                color: var(--text-secondary);
+                font-size: 0.875rem;
             }
 
             input[type="text"] {
-                width: 100%;
-            }
-        }
-
-        .configuration-section {
-            background: var(--background);
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-
-        .configuration-section h3 {
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .config-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-
-        .config-grid .input-group {
-            margin-bottom: 0;
-        }
-
-        .config-grid input[type="number"],
-        .config-grid input[type="text"] {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--border-color);
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .config-grid input[type="number"]:focus,
-        .config-grid input[type="text"]:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px var(--highlight-bg);
-        }
-
-        .current-config {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background: white;
-            border-radius: 0.5rem;
-            border: 1px solid var(--border-color);
-        }
-
-        .current-config h4 {
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .config-display {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .config-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-            padding: 0.75rem;
-            background: var(--background);
-            border-radius: 0.5rem;
-            border: 1px solid var(--border-color);
-        }
-
-        .config-label {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .config-value {
-            font-size: 1rem;
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .config-error {
-            color: var(--error-color);
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-
-        .config-success {
-            color: var(--success-color);
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .full-width {
-            grid-column: 1 / -1;
-        }
-
-        .mappings-container {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .mappings-input {
-            flex: 1;
-        }
-
-        .mappings-help {
-            position: relative;
-            cursor: help;
-        }
-
-        .help-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            color: white;
-            border-radius: 50%;
-            font-size: 0.875rem;
-            font-weight: bold;
-        }
-
-        .help-tooltip {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            margin-top: 0.5rem;
-            padding: 0.75rem;
-            background: white;
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            width: 300px;
-            z-index: 10;
-            display: none;
-        }
-
-        .mappings-help:hover .help-tooltip {
-            display: block;
-        }
-
-        .mappings-display {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            padding: 0.5rem;
-            background: var(--background);
-            border-radius: 0.5rem;
-            min-height: 2.5rem;
-        }
-
-        .mapping-pair {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.25rem 0.75rem;
-            background: white;
-            border: 1px solid var(--border-color);
-            border-radius: 1rem;
-            font-size: 0.875rem;
-            color: var(--text-primary);
-        }
-
-        .mapping-page {
-            color: var(--primary-color);
-            font-weight: 500;
-        }
-
-        .mapping-arrow {
-            color: var(--text-secondary);
-        }
-
-        .mapping-frame {
-            color: var(--secondary-color);
-            font-weight: 500;
-        }
-
-        .config-message {
-            margin-top: 1rem;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .config-error {
-            background-color: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--error-color);
-            color: var(--error-color);
-        }
-
-        .config-success {
-            background-color: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--success-color);
-            color: var(--success-color);
-        }
-
-        .address-input-container {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 1.5rem;
-            align-items: start;
-            width: 100%;
-        }
-
-        .format-toggle {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            background: var(--card-bg);
-            padding: 0.75rem;
-            border-radius: 0.75rem;
-            border: 2px solid var(--border-color);
-            min-width: 120px;
-            box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
-        }
-
-        .toggle-btn {
-            padding: 0.75rem 1rem;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .toggle-btn.active {
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            color: white;
-            border: none;
-            box-shadow: 0 2px 4px rgba(139, 29, 44, 0.3);
-        }
-
-        .toggle-btn:hover:not(.active) {
-            background: var(--highlight-bg);
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .input-controls {
-            display: flex;
-            gap: 1rem;
-            align-items: flex-end;
-            width: 100%;
-        }
-
-        .input-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            flex: 1;
-        }
-
-        .input-wrapper label {
-            font-weight: 600;
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            margin-left: 0.25rem;
-        }
-
-        .input-wrapper input {
-            width: 100%;
-            padding: 0.85rem 1rem;
-            border: 2px solid var(--border-color);
-            border-radius: 0.75rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: var(--card-bg);
-            color: var(--text-primary);
-            box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
-        }
-
-        .input-wrapper input:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px var(--highlight-bg);
-        }
-
-        .cpu-btn {
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            color: white;
-            border: none;
-            padding: 0.85rem 1.25rem;
-            border-radius: 0.75rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            height: 48px;
-            min-width: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 4px rgba(139, 29, 44, 0.2);
-            cursor: pointer;
-        }
-
-        .cpu-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px rgba(139, 29, 44, 0.3);
-        }
-
-        .address-range {
-            margin-top: 0.75rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            background: var(--card-bg);
-            border-radius: 0.75rem;
-            border: 2px solid var(--border-color);
-            box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
-            position: relative;
-        }
-
-        .address-range:hover {
-            border-color: var(--primary-color);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-
-        .address-range::before {
-            content: '📍';
-            font-size: 1rem;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
+                padding: 0.75rem 1rem;
+                border: 2px solid var(--border-color);
+                border-radius: 0.5rem;
+                font-size: 1rem;
+                width: 250px;
+                transition: all 0.3s ease;
+                background: var(--card-bg);
+                color: var(--text-primary);
             }
 
-            50% {
-                transform: scale(1.1);
+            input[type="text"]:focus {
+                border-color: var(--primary-color);
+                outline: none;
+                box-shadow: 0 0 0 3px var(--highlight-bg);
             }
 
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        .address-range-label {
-            font-weight: 600;
-            color: var(--text-primary);
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
-        }
-
-        .address-range-value {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-family: 'Consolas', monospace;
-            background: linear-gradient(to right, var(--highlight-bg), var(--card-bg));
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            color: var(--primary-color);
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            border: 1px solid var(--highlight-border);
-            transition: all 0.3s ease;
-        }
-
-        .address-range-value:hover {
-            background: linear-gradient(to right, rgba(79, 70, 229, 0.1), var(--card-bg));
-            border-color: var(--primary-color);
-        }
-
-        .address-range-value span {
-            position: relative;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            background: rgba(79, 70, 229, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .address-range-value span:hover {
-            background: rgba(79, 70, 229, 0.2);
-            transform: translateY(-1px);
-        }
-
-        .address-range-value::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            background-color: var(--primary-color);
-            border-radius: 50%;
-            opacity: 0.5;
-            transition: all 0.3s ease;
-        }
-
-        .address-range-value:hover::before {
-            transform: scale(1.2);
-            opacity: 0.8;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: flex-end;
-            width: 100%;
-            padding-top: 1rem;
-            border-top: 2px solid var(--border-color);
-            margin-top: 1rem;
-        }
-
-        .process-btn {
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            color: white;
-            border: none;
-            padding: 0.85rem 2rem;
-            border-radius: 0.75rem;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 200px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 4px rgba(139, 29, 44, 0.2);
-        }
-
-        .process-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px rgba(139, 29, 44, 0.3);
-        }
-
-        .result-message {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
-            padding: 1rem 1.5rem;
-            border-radius: 0.75rem;
-            font-weight: 500;
-            animation: slideInTop 0.3s ease;
-            display: none;
-            max-width: 400px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.001);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .result-message::before {
-            content: '';
-            width: 24px;
-            height: 24px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-
-        .result-message.success {
-            background-color: rgba(16, 185, 129, 0.1);
-            border: 2px solid var(--success-color);
-            color: var(--success-color);
-        }
-
-        .result-message.success::before {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310b981'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
-        }
-
-        .result-message.error {
-            background-color: rgba(239, 68, 68, 0.1);
-            border: 2px solid var(--error-color);
-            color: var(--error-color);
-        }
-
-        .result-message.error::before {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ef4444'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-2h2v2h-2zm0-10v6h2V7h-2z'/%3E%3C/svg%3E");
-        }
-
-        .result-message.show {
-            display: flex;
-        }
-
-        .result-message-content {
-            flex: 1;
-            line-height: 1.5;
-        }
-
-        .result-message strong {
-            display: block;
-            color: inherit;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .page-fault-notification {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
-            padding: 1rem 1.5rem;
-            background-color: rgba(239, 68, 68, 0.1);
-            border: 2px solid var(--error-color);
-            border-radius: 0.75rem;
-            color: var(--error-color);
-            font-weight: 600;
-            animation: slideInTop 0.3s ease;
-            display: none;
-            max-width: 400px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            z-index: 1000;
-        }
-
-        .page-fault-notification.show {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .page-fault-notification::before {
-            content: '';
-            width: 24px;
-            height: 24px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ef4444'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-2h2v2h-2zm0-10v6h2V7h-2z'/%3E%3C/svg%3E");
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-
-        @keyframes slideInTop {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
+            .btn {
+                background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+                color: white;
+                border: none;
+                padding: 0.75rem 1.5rem;
+                border-radius: 0.5rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 4px rgba(139, 29, 44, 0.2);
             }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            .btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px rgba(139, 29, 44, 0.3);
             }
-        }
 
-        @keyframes slideOutTop {
-            from {
-                opacity: 1;
+            .btn:active {
                 transform: translateY(0);
             }
 
-            to {
-                opacity: 0;
-                transform: translateY(-20px);
+            .number-format-toggle {
+                display: flex;
+                gap: 0.5rem;
+                align-items: center;
+                margin-bottom: 2rem;
+                justify-content: center;
+                background: var(--background);
+                padding: 0.5rem;
+                border-radius: 0.75rem;
             }
-        }
 
-        @media (max-width: 768px) {
-            .input-section {
+            .toggle-btn {
+                padding: 0.625rem 1.25rem;
+                border: 2px solid var(--primary-color);
+                background-color: transparent;
+                color: var(--primary-color);
+                cursor: pointer;
+                border-radius: 0.5rem;
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
+
+            .toggle-btn.active {
+                background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+                color: white;
+                border: none;
+                box-shadow: 0 2px 4px rgba(139, 29, 44, 0.3);
+            }
+
+            .toggle-btn:hover:not(.active) {
+                background: var(--highlight-bg);
+                color: var(--primary-color);
+                border-color: var(--primary-color);
+            }
+
+            .tables-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 2rem;
+                margin-top: 2rem;
+            }
+
+            .table-wrapper {
+                background-color: var(--card-bg);
                 padding: 1.5rem;
+                border-radius: 0.75rem;
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+                transition: all 0.3s ease;
+            }
+
+            .table-wrapper:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            }
+
+            .table-wrapper h3 {
+                color: var(--text-primary);
+                margin-bottom: 1rem;
+                font-size: 1.25rem;
+                font-weight: 600;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                margin-top: 1rem;
+            }
+
+            th,
+            td {
+                padding: 1rem;
+                text-align: center;
+                border: 1px solid var(--border-color);
+            }
+
+            th {
+                background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+                color: white;
+                font-weight: 500;
+            }
+
+            th:first-child {
+                border-top-left-radius: 0.5rem;
+            }
+
+            th:last-child {
+                border-top-right-radius: 0.5rem;
+            }
+
+            tr:last-child td:first-child {
+                border-bottom-left-radius: 0.5rem;
+            }
+
+            tr:last-child td:last-child {
+                border-bottom-right-radius: 0.5rem;
+            }
+
+            tbody tr {
+                transition: all 0.3s ease;
+            }
+
+            tbody tr:hover {
+                background-color: var(--background);
+            }
+
+            tr[id^="virtual-row-"].highlighted,
+            tr[id^="physical-row-"].highlighted {
+                background-color: rgba(79, 70, 229, 0.1);
+                transform: scale(1.02);
+            }
+
+            .error-message,
+            .success-message {
+                text-align: center;
+                margin-top: 1rem;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                font-weight: 500;
+                animation: slideIn 0.3s ease;
+            }
+
+            .error-message {
+                color: var(--error-color);
+                background-color: rgba(239, 68, 68, 0.1);
+                border: 1px solid rgba(239, 68, 68, 0.2);
+            }
+
+            .success-message {
+                color: var(--success-color);
+                background-color: rgba(16, 185, 129, 0.1);
+                border: 1px solid rgba(16, 185, 129, 0.2);
+            }
+
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                }
+
+                50% {
+                    transform: scale(1.05);
+                }
+
+                100% {
+                    transform: scale(1);
+                }
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(-50%);
+                }
+            }
+
+            @media (max-width: 768px) {
+                body {
+                    padding: 1rem;
+                }
+
+                .container {
+                    padding: 1rem;
+                }
+
+                .tables-container {
+                    grid-template-columns: 1fr;
+                }
+
+                input[type="text"] {
+                    width: 100%;
+                }
+            }
+
+            .configuration-section {
+                background: var(--background);
+                padding: 1.5rem;
+                border-radius: 0.75rem;
+                margin-bottom: 2rem;
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            }
+
+            .configuration-section h3 {
+                color: var(--text-primary);
+                margin-bottom: 1rem;
+                font-size: 1.25rem;
+                font-weight: 600;
+            }
+
+            .config-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+
+            .config-grid .input-group {
+                margin-bottom: 0;
+            }
+
+            .config-grid input[type="number"],
+            .config-grid input[type="text"] {
+                width: 100%;
+                padding: 0.75rem 1rem;
+                border: 2px solid var(--border-color);
+                border-radius: 0.5rem;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+            }
+
+            .config-grid input[type="number"]:focus,
+            .config-grid input[type="text"]:focus {
+                border-color: var(--primary-color);
+                outline: none;
+                box-shadow: 0 0 0 3px var(--highlight-bg);
+            }
+
+            .current-config {
+                margin-top: 1.5rem;
+                padding: 1rem;
+                background: white;
+                border-radius: 0.5rem;
+                border: 1px solid var(--border-color);
+            }
+
+            .current-config h4 {
+                color: var(--text-primary);
+                margin-bottom: 1rem;
+                font-size: 1.1rem;
+                font-weight: 600;
+            }
+
+            .config-display {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+
+            .config-item {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+                padding: 0.75rem;
+                background: var(--background);
+                border-radius: 0.5rem;
+                border: 1px solid var(--border-color);
+            }
+
+            .config-label {
+                font-size: 0.875rem;
+                color: var(--text-secondary);
+                font-weight: 500;
+            }
+
+            .config-value {
+                font-size: 1rem;
+                color: var(--text-primary);
+                font-weight: 600;
+            }
+
+            .config-error {
+                color: var(--error-color);
+                font-size: 0.875rem;
+                margin-top: 0.25rem;
+            }
+
+            .config-success {
+                color: var(--success-color);
+                font-size: 0.875rem;
+                margin-top: 0.25rem;
+                animation: fadeIn 0.3s ease;
+            }
+
+            .full-width {
+                grid-column: 1 / -1;
+            }
+
+            .mappings-container {
+                display: flex;
+                gap: 0.5rem;
+                align-items: center;
+            }
+
+            .mappings-input {
+                flex: 1;
+            }
+
+            .mappings-help {
+                position: relative;
+                cursor: help;
+            }
+
+            .help-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 24px;
+                height: 24px;
+                background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+                color: white;
+                border-radius: 50%;
+                font-size: 0.875rem;
+                font-weight: bold;
+            }
+
+            .help-tooltip {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                margin-top: 0.5rem;
+                padding: 0.75rem;
+                background: white;
+                border: 1px solid var(--border-color);
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+                font-size: 0.875rem;
+                color: var(--text-secondary);
+                width: 300px;
+                z-index: 10;
+                display: none;
+            }
+
+            .mappings-help:hover .help-tooltip {
+                display: block;
+            }
+
+            .mappings-display {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                padding: 0.5rem;
+                background: var(--background);
+                border-radius: 0.5rem;
+                min-height: 2.5rem;
+            }
+
+            .mapping-pair {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.25rem 0.75rem;
+                background: white;
+                border: 1px solid var(--border-color);
+                border-radius: 1rem;
+                font-size: 0.875rem;
+                color: var(--text-primary);
+            }
+
+            .mapping-page {
+                color: var(--primary-color);
+                font-weight: 500;
+            }
+
+            .mapping-arrow {
+                color: var(--text-secondary);
+            }
+
+            .mapping-frame {
+                color: var(--secondary-color);
+                font-weight: 500;
+            }
+
+            .config-message {
+                margin-top: 1rem;
+                padding: 0.75rem 1rem;
+                border-radius: 0.5rem;
+                font-weight: 500;
+                animation: fadeIn 0.3s ease;
+            }
+
+            .config-error {
+                background-color: rgba(239, 68, 68, 0.1);
+                border: 1px solid var(--error-color);
+                color: var(--error-color);
+            }
+
+            .config-success {
+                background-color: rgba(16, 185, 129, 0.1);
+                border: 1px solid var(--success-color);
+                color: var(--success-color);
             }
 
             .address-input-container {
-                grid-template-columns: 1fr;
+                display: grid;
+                grid-template-columns: auto 1fr;
+                gap: 1.5rem;
+                align-items: start;
+                width: 100%;
             }
 
             .format-toggle {
-                flex-direction: row;
-                justify-content: center;
-                width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                background: var(--card-bg);
+                padding: 0.75rem;
+                border-radius: 0.75rem;
+                border: 2px solid var(--border-color);
+                min-width: 120px;
+                box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
+            }
+
+            .toggle-btn {
+                padding: 0.75rem 1rem;
+                border: none;
+                background: transparent;
+                color: var(--text-secondary);
+                cursor: pointer;
+                border-radius: 0.5rem;
+                font-size: 0.875rem;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                white-space: nowrap;
+            }
+
+            .toggle-btn.active {
+                background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+                color: white;
+                border: none;
+                box-shadow: 0 2px 4px rgba(139, 29, 44, 0.3);
+            }
+
+            .toggle-btn:hover:not(.active) {
+                background: var(--highlight-bg);
+                color: var(--primary-color);
+                border-color: var(--primary-color);
             }
 
             .input-controls {
+                display: flex;
+                gap: 1rem;
+                align-items: flex-end;
+                width: 100%;
+            }
+
+            .input-wrapper {
+                display: flex;
                 flex-direction: column;
+                gap: 0.75rem;
+                flex: 1;
+            }
+
+            .input-wrapper label {
+                font-weight: 600;
+                color: var(--text-primary);
+                font-size: 0.875rem;
+                margin-left: 0.25rem;
+            }
+
+            .input-wrapper input {
+                width: 100%;
+                padding: 0.85rem 1rem;
+                border: 2px solid var(--border-color);
+                border-radius: 0.75rem;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+                background: var(--card-bg);
+                color: var(--text-primary);
+                box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
+            }
+
+            .input-wrapper input:focus {
+                border-color: var(--primary-color);
+                outline: none;
+                box-shadow: 0 0 0 3px var(--highlight-bg);
             }
 
             .cpu-btn {
-                width: 100%;
+                background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+                color: white;
+                border: none;
+                padding: 0.85rem 1.25rem;
+                border-radius: 0.75rem;
+                font-size: 0.875rem;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                height: 48px;
+                min-width: 80px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 4px rgba(139, 29, 44, 0.2);
+                cursor: pointer;
+            }
+
+            .cpu-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px rgba(139, 29, 44, 0.3);
+            }
+
+            .address-range {
+                margin-top: 0.75rem;
+                font-size: 0.875rem;
+                color: var(--text-secondary);
+                display: inline-flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.75rem 1rem;
+                background: var(--card-bg);
+                border-radius: 0.75rem;
+                border: 2px solid var(--border-color);
+                box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
+                position: relative;
+            }
+
+            .address-range:hover {
+                border-color: var(--primary-color);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            }
+
+            .address-range::before {
+                content: '📍';
+                font-size: 1rem;
+                animation: pulse 2s infinite;
+            }
+
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                }
+
+                50% {
+                    transform: scale(1.1);
+                }
+
+                100% {
+                    transform: scale(1);
+                }
+            }
+
+            .address-range-label {
+                font-weight: 600;
+                color: var(--text-primary);
+                text-transform: uppercase;
+                font-size: 0.75rem;
+                letter-spacing: 0.5px;
+            }
+
+            .address-range-value {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                font-family: 'Consolas', monospace;
+                background: linear-gradient(to right, var(--highlight-bg), var(--card-bg));
+                padding: 0.5rem 1rem;
+                border-radius: 0.5rem;
+                color: var(--primary-color);
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                border: 1px solid var(--highlight-border);
+                transition: all 0.3s ease;
+            }
+
+            .address-range-value:hover {
+                background: linear-gradient(to right, rgba(79, 70, 229, 0.1), var(--card-bg));
+                border-color: var(--primary-color);
+            }
+
+            .address-range-value span {
+                position: relative;
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.25rem;
+                background: rgba(79, 70, 229, 0.1);
+                transition: all 0.3s ease;
+            }
+
+            .address-range-value span:hover {
+                background: rgba(79, 70, 229, 0.2);
+                transform: translateY(-1px);
+            }
+
+            .address-range-value::before {
+                content: '';
+                width: 6px;
+                height: 6px;
+                background-color: var(--primary-color);
+                border-radius: 50%;
+                opacity: 0.5;
+                transition: all 0.3s ease;
+            }
+
+            .address-range-value:hover::before {
+                transform: scale(1.2);
+                opacity: 0.8;
             }
 
             .action-buttons {
-                justify-content: center;
+                display: flex;
+                justify-content: flex-end;
+                width: 100%;
+                padding-top: 1rem;
+                border-top: 2px solid var(--border-color);
+                margin-top: 1rem;
             }
 
             .process-btn {
-                width: 100%;
+                background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+                color: white;
+                border: none;
+                padding: 0.85rem 2rem;
+                border-radius: 0.75rem;
+                font-weight: 600;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                min-width: 200px;
+                height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 4px rgba(139, 29, 44, 0.2);
             }
 
-            .result-message,
+            .process-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px rgba(139, 29, 44, 0.3);
+            }
+
+            .result-message {
+                position: fixed;
+                top: 2rem;
+                right: 2rem;
+                padding: 1rem 1.5rem;
+                border-radius: 0.75rem;
+                font-weight: 500;
+                animation: slideInTop 0.3s ease;
+                display: none;
+                max-width: 400px;
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.001);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .result-message::before {
+                content: '';
+                width: 24px;
+                height: 24px;
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+
+            .result-message.success {
+                background-color: rgba(16, 185, 129, 0.1);
+                border: 2px solid var(--success-color);
+                color: var(--success-color);
+            }
+
+            .result-message.success::before {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310b981'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+            }
+
+            .result-message.error {
+                background-color: rgba(239, 68, 68, 0.1);
+                border: 2px solid var(--error-color);
+                color: var(--error-color);
+            }
+
+            .result-message.error::before {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ef4444'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-2h2v2h-2zm0-10v6h2V7h-2z'/%3E%3C/svg%3E");
+            }
+
+            .result-message.show {
+                display: flex;
+            }
+
+            .result-message-content {
+                flex: 1;
+                line-height: 1.5;
+            }
+
+            .result-message strong {
+                display: block;
+                color: inherit;
+                font-weight: 600;
+                margin-bottom: 0.25rem;
+            }
+
             .page-fault-notification {
                 position: fixed;
-                top: 1rem;
-                right: 1rem;
-                left: 1rem;
-                max-width: none;
-            }
-        }
-
-        .calculations-section {
-            margin-top: 1rem;
-            padding: 1rem;
-            background: var(--card-bg);
-            border-radius: 0.75rem;
-            border: 2px solid var(--border-color);
-            box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
-            display: none;
-        }
-
-        .calculations-section.show {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .calculations-section h4 {
-            color: var(--text-primary);
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .calculations-section h4::before {
-            content: '🧮';
-            font-size: 1.2rem;
-        }
-
-        .calculation-method {
-            padding: 1rem;
-            background: var(--background);
-            border-radius: 0.75rem;
-            border: 1px solid var(--border-color);
-        }
-
-        .calculation-steps {
-            display: grid;
-            gap: 0.5rem;
-        }
-
-        .calculation-step {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.5rem;
-            background: white;
-            border-radius: 0.5rem;
-            font-family: 'Consolas', monospace;
-            font-size: 0.9rem;
-            color: var(--text-primary);
-        }
-
-        .step-label {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .step-value {
-            color: var(--primary-color);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .binary-group {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            background: var(--background);
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-family: 'Consolas', monospace;
-        }
-
-        .binary-part {
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            background: var(--highlight-bg);
-            color: var(--primary-color);
-            font-weight: 600;
-            border: 1px solid var(--highlight-border);
-        }
-
-        .binary-separator {
-            color: var(--text-secondary);
-            font-weight: normal;
-            margin: 0 0.25rem;
-        }
-
-        .calculation-step.result {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--success-color);
-            color: var(--success-color);
-        }
-
-        .calculation-step.result .step-label {
-            color: var(--success-color);
-            font-weight: 600;
-        }
-
-        .calculation-step.error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--error-color);
-            color: var(--error-color);
-        }
-
-        .calculation-step.error .step-label {
-            color: var(--error-color);
-            font-weight: 600;
-        }
-
-        .calculation-step.error .step-value {
-            color: var(--error-color);
-        }
-
-        .footer {
-            text-align: center;
-            padding: 2rem 0;
-            margin-top: 3rem;
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            font-weight: 500;
-            border-top: 2px solid var(--border-color);
-        }
-
-        .footer .heart {
-            color: #ef4444;
-            display: inline-block;
-            animation: heartbeat 1.5s ease infinite;
-            margin: 0 0.25rem;
-            font-size: 1.1rem;
-        }
-
-        @keyframes heartbeat {
-
-            0%,
-            100% {
-                transform: scale(1);
+                top: 2rem;
+                right: 2rem;
+                padding: 1rem 1.5rem;
+                background-color: rgba(239, 68, 68, 0.1);
+                border: 2px solid var(--error-color);
+                border-radius: 0.75rem;
+                color: var(--error-color);
+                font-weight: 600;
+                animation: slideInTop 0.3s ease;
+                display: none;
+                max-width: 400px;
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+                z-index: 1000;
             }
 
-            50% {
-                transform: scale(1.1);
-            }
-        }
-
-        .footer .creator {
-            color: var(--primary-color);
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .footer .creator:hover {
-            color: var(--primary-hover);
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <h1>Paging Simulation</h1>
-
-        <div class="configuration-section">
-            <h3>Paging Table Configuration</h3>
-            <div class="config-grid">
-                <div class="input-group">
-                    <label for="frameSize">Frame Size (in bytes)</label>
-                    <input type="number" id="frameSize" value="4096" min="1024" step="1024">
-                </div>
-                <div class="input-group">
-                    <label for="totalFrames">Total Number of Frames</label>
-                    <input type="number" id="totalFrames" value="8" min="1" max="16">
-                </div>
-                <div class="input-group">
-                    <label for="totalPages">Total Virtual Pages</label>
-                    <input type="number" id="totalPages" value="16" min="1" max="32">
-                </div>
-                <div class="input-group full-width">
-                    <label for="initialMappings">Initial Page Mappings</label>
-                    <div class="mappings-container">
-                        <div class="mappings-input">
-                            <input type="text" id="initialMappings" value="0:2, 1:1, 2:6, 3:4, 4:0, 5:3, 8:5, 11:7"
-                                placeholder="e.g., 0:2,1:1,2:6">
-                        </div>
-                        <div class="mappings-help">
-                            <span class="help-icon">?</span>
-                            <div class="help-tooltip">
-                                Format: page:frame pairs separated by commas<br>
-                                Example: 0:2,1:1,2:6<br>
-                                Page numbers must be less than Total Pages<br>
-                                Frame numbers must be less than Total Frames
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button class="btn" onclick="initializePagingTable()">Initialize Paging Table</button>
-            </div>
-            <div id="currentConfig" class="current-config">
-                <h4>Current Configuration</h4>
-                <div class="config-display">
-                    <div class="config-item">
-                        <span class="config-label">Frame Size</span>
-                        <span class="config-value" id="displayFrameSize">4096 bytes</span>
-                    </div>
-                    <div class="config-item">
-                        <span class="config-label">Total Frames</span>
-                        <span class="config-value" id="displayTotalFrames">8</span>
-                    </div>
-                    <div class="config-item">
-                        <span class="config-label">Total Pages</span>
-                        <span class="config-value" id="displayTotalPages">16</span>
-                    </div>
-                    <div class="config-item full-width">
-                        <span class="config-label">Mappings</span>
-                        <div class="mappings-display" id="displayMappings">
-                            <div class="mapping-pair">
-                                <span class="mapping-page">Page 0</span>
-                                <span class="mapping-arrow">→</span>
-                                <span class="mapping-frame">Frame 2</span>
-                            </div>
-                            <!-- More mappings will be added dynamically -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="input-section">
-            <div class="input-group">
-                <div class="address-input-container">
-                    <div class="format-toggle">
-                        <button class="toggle-btn active" onclick="setNumberFormat('decimal')">Decimal</button>
-                        <button class="toggle-btn" onclick="setNumberFormat('binary')">Binary</button>
-                    </div>
-                    <div class="input-controls">
-                        <div class="input-wrapper">
-                            <label for="address">Virtual Address</label>
-                            <input type="text" id="address" placeholder="Enter address (e.g., 8192)">
-                        </div>
-                        <button class="cpu-btn" onclick="generateValidAddress()" title="Generate valid address">
-                            <span class="cpu-icon">CPU</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="address-range">
-                    <span class="address-range-label">Valid Range:</span>
-                    <span class="address-range-value" id="validRange">0 - 65535</span>
-                </div>
-            </div>
-
-            <div id="calculationsSection" class="calculations-section">
-                <h4>Address Calculation Details</h4>
-                <div class="calculation-methods">
-                    <div class="calculation-method">
-                        <div id="decimalCalculation"></div>
-                    </div>
-                    <div class="calculation-method">
-                        <div id="binaryCalculation"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="action-buttons">
-                <button class="btn process-btn" onclick="processAddress()">Process Address</button>
-            </div>
-            <div id="resultMessage" class="result-message"></div>
-            <div id="pageFaultNotification" class="page-fault-notification">
-                Page Fault Detected!
-            </div>
-        </div>
-
-        <div id="praSection" class="pra-section">
-            <h3>Page Replacement Algorithms</h3>
-            <div id="praContent">
-                <p>Select a PRA technique to resolve the page fault:</p>
-                <div class="pra-algorithms">
-                    <button class="pra-btn" onclick="executePRA('FIFO')">FIFO</button>
-                    <button class="pra-btn" onclick="executePRA('LRU')">LRU</button>
-                    <button class="pra-btn" onclick="executePRA('Optimal')">Optimal</button>
-                </div>
-                <div id="praVisualization" class="pra-visualization"></div>
-            </div>
-        </div>
-
-        <div class="tables-container">
-            <div class="table-wrapper">
-                <h3>Virtual Memory Table</h3>
-                <table id="virtualTable">
-                    <thead>
-                        <tr>
-                            <th>Virtual Memory Address</th>
-                            <th>Virtual Page</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-
-            <div class="table-wrapper">
-                <h3>Physical Memory</h3>
-                <table id="physicalTable">
-                    <thead>
-                        <tr>
-                            <th>Frame Number</th>
-                            <th>Physical Memory Address</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-        <footer class="footer">
-            Made with <span class="heart">❤️</span> by <span class="creator">Urva Gandhi</span> and <span
-                class="creator">Kahan Dave</span>
-        </footer>
-    </div>
-
-    <script>
-        let currentFormat = 'decimal';
-        let PAGE_SIZE = 4096; // Will be updated from user input
-        let TOTAL_FRAMES = 8; // Will be updated from user input
-        let pageTable = []; // Will be initialized based on user input
-
-        function initializePagingTable() {
-            // Get values from input fields
-            PAGE_SIZE = parseInt(document.getElementById('frameSize').value);
-            TOTAL_FRAMES = parseInt(document.getElementById('totalFrames').value);
-            const totalPages = parseInt(document.getElementById('totalPages').value);
-            const initialMappingsStr = document.getElementById('initialMappings').value;
-
-            // Validate inputs
-            if (PAGE_SIZE < 1024 || PAGE_SIZE % 1024 !== 0) {
-                showConfigMessage("Frame size must be at least 1024 bytes and a multiple of 1024", true);
-                return;
+            .page-fault-notification.show {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
             }
 
-            if (TOTAL_FRAMES < 1 || TOTAL_FRAMES > 16) {
-                showConfigMessage("Total frames must be between 1 and 16", true);
-                return;
+            .page-fault-notification::before {
+                content: '';
+                width: 24px;
+                height: 24px;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ef4444'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-2h2v2h-2zm0-10v6h2V7h-2z'/%3E%3C/svg%3E");
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
             }
 
-            if (totalPages < 1 || totalPages > 32) {
-                showConfigMessage("Total pages must be between 1 and 32", true);
-                return;
-            }
-
-            // Parse initial mappings
-            let initialMappings;
-            try {
-                initialMappings = initialMappingsStr.split(',').map(pair => {
-                    const [page, frame] = pair.trim().split(':').map(Number);
-                    if (isNaN(page) || isNaN(frame)) {
-                        throw new Error('Invalid mapping format');
-                    }
-                    return { page, frame };
-                });
-            } catch (error) {
-                showConfigMessage("Invalid initial mappings format. Use comma-separated pairs like '0:2,1:1,2:6'", true);
-                return;
-            }
-
-            // Validate mappings
-            const mappingErrors = validateMappings(initialMappings, totalPages, TOTAL_FRAMES);
-            if (mappingErrors.length > 0) {
-                showConfigMessage(mappingErrors.join('\n'), true);
-                return;
-            }
-
-            // Initialize page table
-            pageTable = new Array(totalPages).fill().map((_, i) => ({
-                virtualPage: i,
-                frameNumber: 'X'
-            }));
-
-            // Set initial mappings
-            initialMappings.forEach(({ page, frame }) => {
-                pageTable[page].frameNumber = frame;
-            });
-
-            // Update valid address range after initialization
-            updateValidAddressRange();
-
-            // Update display and show success message
-            updateConfigDisplay();
-            updateTables();
-            showConfigMessage("Paging table initialized successfully!");
-        }
-
-        function setNumberFormat(format) {
-            currentFormat = format;
-            const toggleBtns = document.querySelectorAll('.toggle-btn');
-            toggleBtns.forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            // Update address input if it has a value
-            const addressInput = document.getElementById('address');
-            if (addressInput.value) {
-                let value;
-                if (format === 'binary') {
-                    // Convert decimal to binary
-                    value = parseInt(addressInput.value).toString(2).padStart(16, '0');
-                } else {
-                    // Convert binary to decimal
-                    value = addressInput.value.length === 16 ? 
-                        parseInt(addressInput.value, 2).toString() : 
-                        addressInput.value;
+            @keyframes slideInTop {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px);
                 }
-                addressInput.value = value;
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
 
-            // Update valid range display
-            updateValidAddressRange();
-            updateTables();
-        }
-        
+            @media (max-width: 768px) {
+                .input-section {
+                    padding: 1.5rem;
+                }
 
-        function convertToDecimal(value) {
-            if (currentFormat === 'binary') {
-                return parseInt(value, 2);
+                .address-input-container {
+                    grid-template-columns: 1fr;
+                }
+
+                .format-toggle {
+                    flex-direction: row;
+                    justify-content: center;
+                    width: 100%;
+                }
+
+                .input-controls {
+                    flex-direction: column;
+                }
+
+                .cpu-btn {
+                    width: 100%;
+                }
+
+                .action-buttons {
+                    justify-content: center;
+                }
+
+                .process-btn {
+                    width: 100%;
+                }
+
+                .result-message,
+                .page-fault-notification {
+                    position: fixed;
+                    top: 1rem;
+                    right: 1rem;
+                    left: 1rem;
+                    max-width: none;
+                }
             }
-            return parseInt(value);
-        }
 
-        function formatNumber(number) {
-            if (currentFormat === 'binary') {
-                return number.toString(2).padStart(16, '0');
+            .calculations-section {
+                margin-top: 1rem;
+                padding: 1rem;
+                background: var(--card-bg);
+                border-radius: 0.75rem;
+                border: 2px solid var(--border-color);
+                box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
+                display: none;
             }
-            return number.toString();
-        }
 
-        function setupInputListener() {
-            const addressInput = document.getElementById('address');
-            addressInput.addEventListener('input', function () {
-                document.getElementById('pageFaultNotification').classList.remove('show');
-                document.getElementById('resultMessage').classList.remove('show');
-            });
-        }
+            .calculations-section.show {
+                display: block;
+                animation: fadeIn 0.3s ease;
+            }
 
-        function showCalculations(address, pageNumber, offset) {
-            const calculationsSection = document.getElementById('calculationsSection');
-            const decimalCalc = document.getElementById('decimalCalculation');
-            const binaryCalc = document.getElementById('binaryCalculation');
+            .calculations-section h4 {
+                color: var(--text-primary);
+                font-size: 1rem;
+                font-weight: 600;
+                margin-bottom: 0.75rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
 
-            calculationsSection.classList.add('show');
-            const calculationMethods = document.querySelector('.calculation-methods');
-            calculationMethods.style.gridTemplateColumns = '1fr';
+            .calculations-section h4::before {
+                content: '🧮';
+                font-size: 1.2rem;
+            }
 
-            const pageTableEntry = pageTable[pageNumber];
-            const physicalAddress = pageTableEntry.frameNumber !== 'X' ?
-                (pageTableEntry.frameNumber * PAGE_SIZE) + offset : null;
+            .calculation-method {
+                padding: 1rem;
+                background: var(--background);
+                border-radius: 0.75rem;
+                border: 1px solid var(--border-color);
+            }
 
-            if (currentFormat === 'decimal') {
-                decimalCalc.parentElement.style.display = 'block';
-                binaryCalc.parentElement.style.display = 'none';
+            .calculation-steps {
+                display: grid;
+                gap: 0.5rem;
+            }
 
-                decimalCalc.innerHTML = `
+            .calculation-step {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                align-items: center;
+                gap: 1rem;
+                padding: 0.5rem;
+                background: white;
+                border-radius: 0.5rem;
+                font-family: 'Consolas', monospace;
+                font-size: 0.9rem;
+                color: var(--text-primary);
+            }
+
+            .step-label {
+                color: var(--text-secondary);
+                font-size: 0.875rem;
+                font-weight: 500;
+                white-space: nowrap;
+            }
+
+            .step-value {
+                color: var(--primary-color);
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .binary-group {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
+                background: var(--background);
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.25rem;
+                font-family: 'Consolas', monospace;
+            }
+
+            .binary-part {
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.25rem;
+                background: var(--highlight-bg);
+                color: var(--primary-color);
+                font-weight: 600;
+                border: 1px solid var(--highlight-border);
+            }
+
+            .binary-separator {
+                color: var(--text-secondary);
+                font-weight: normal;
+                margin: 0 0.25rem;
+            }
+
+            .calculation-step.result {
+                background: rgba(16, 185, 129, 0.1);
+                border: 1px solid var(--success-color);
+                color: var(--success-color);
+            }
+
+            .calculation-step.result .step-label {
+                color: var(--success-color);
+                font-weight: 600;
+            }
+
+            .calculation-step.error {
+                background: rgba(239, 68, 68, 0.1);
+                border: 1px solid var(--error-color);
+                color: var(--error-color);
+            }
+
+            .calculation-step.error .step-label {
+                color: var(--error-color);
+                font-weight: 600;
+            }
+
+            .calculation-step.error .step-value {
+                color: var(--error-color);
+            }
+
+            .footer {
+                text-align: center;
+                padding: 2rem 0;
+                margin-top: 3rem;
+                color: var(--text-secondary);
+                font-size: 0.95rem;
+                font-weight: 500;
+                border-top: 2px solid var(--border-color);
+            }
+
+            .footer .heart {
+                color: #ef4444;
+                display: inline-block;
+                animation: heartbeat 1.5s ease infinite;
+                margin: 0 0.25rem;
+                font-size: 1.1rem;
+            }
+
+            @keyframes heartbeat {
+
+                0%,
+                100% {
+                    transform: scale(1);
+                }
+
+                50% {
+                    transform: scale(1.1);
+                }
+            }
+
+            .footer .creator {
+                color: var(--primary-color);
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+
+            .footer .creator:hover {
+                color: var(--primary-hover);
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <h1>Paging Simulation</h1>
+
+            <div class="configuration-section">
+                <h3>Paging Table Configuration</h3>
+                <div class="config-grid">
+                    <div class="input-group">
+                        <label for="frameSize">Frame Size (in bytes)</label>
+                        <input type="number" id="frameSize" value="4096" min="1024" step="1024">
+                    </div>
+                    <div class="input-group">
+                        <label for="totalFrames">Total Number of Frames</label>
+                        <input type="number" id="totalFrames" value="8" min="1" max="16">
+                    </div>
+                    <div class="input-group">
+                        <label for="totalPages">Total Virtual Pages</label>
+                        <input type="number" id="totalPages" value="16" min="1" max="32">
+                    </div>
+                    <div class="input-group full-width">
+                        <label for="initialMappings">Initial Page Mappings</label>
+                        <div class="mappings-container">
+                            <div class="mappings-input">
+                                <input type="text" id="initialMappings" value="0:2, 1:1, 2:6, 3:4, 4:0, 5:3, 8:5, 11:7"
+                                    placeholder="e.g., 0:2,1:1,2:6">
+                            </div>
+                            <div class="mappings-help">
+                                <span class="help-icon">?</span>
+                                <div class="help-tooltip">
+                                    Format: page:frame pairs separated by commas<br>
+                                    Example: 0:2,1:1,2:6<br>
+                                    Page numbers must be less than Total Pages<br>
+                                    Frame numbers must be less than Total Frames
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="initializePagingTable()">Initialize Paging Table</button>
+                </div>
+                <div id="currentConfig" class="current-config">
+                    <h4>Current Configuration</h4>
+                    <div class="config-display">
+                        <div class="config-item">
+                            <span class="config-label">Frame Size</span>
+                            <span class="config-value" id="displayFrameSize">4096 bytes</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Total Frames</span>
+                            <span class="config-value" id="displayTotalFrames">8</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Total Pages</span>
+                            <span class="config-value" id="displayTotalPages">16</span>
+                        </div>
+                        <div class="config-item full-width">
+                            <span class="config-label">Mappings</span>
+                            <div class="mappings-display" id="displayMappings">
+                                <div class="mapping-pair">
+                                    <span class="mapping-page">Page 0</span>
+                                    <span class="mapping-arrow">→</span>
+                                    <span class="mapping-frame">Frame 2</span>
+                                </div>
+                                <!-- More mappings will be added dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <div class="address-input-container">
+                        <div class="format-toggle">
+                            <button class="toggle-btn active" onclick="setNumberFormat('decimal')">Decimal</button>
+                            <button class="toggle-btn" onclick="setNumberFormat('binary')">Binary</button>
+                        </div>
+                        <div class="input-controls">
+                            <div class="input-wrapper">
+                                <label for="address">Virtual Address</label>
+                                <input type="text" id="address" placeholder="Enter address (e.g., 8192)">
+                            </div>
+                            <button class="cpu-btn" onclick="generateValidAddress()" title="Generate valid address">
+                                <span class="cpu-icon">CPU</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="address-range">
+                        <span class="address-range-label">Valid Range:</span>
+                        <span class="address-range-value" id="validRange">0 - 65535</span>
+                    </div>
+                </div>
+
+                <div id="calculationsSection" class="calculations-section">
+                    <h4>Address Calculation Details</h4>
+                    <div class="calculation-methods">
+                        <div class="calculation-method">
+                            <div id="decimalCalculation"></div>
+                        </div>
+                        <div class="calculation-method">
+                            <div id="binaryCalculation"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn process-btn" onclick="processAddress()">Process Address</button>
+                </div>
+                <div id="resultMessage" class="result-message"></div>
+                <div id="pageFaultNotification" class="page-fault-notification">
+                    Page Fault Detected!
+                </div>
+            </div>
+
+            <div class="tables-container">
+                <div class="table-wrapper">
+                    <h3>Virtual Memory Table</h3>
+                    <table id="virtualTable">
+                        <thead>
+                            <tr>
+                                <th>Virtual Memory Address</th>
+                                <th>Virtual Page</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="table-wrapper">
+                    <h3>Physical Memory</h3>
+                    <table id="physicalTable">
+                        <thead>
+                            <tr>
+                                <th>Frame Number</th>
+                                <th>Physical Memory Address</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <footer class="footer">
+                Made with <span class="heart">❤️</span> by <span class="creator">Urva Gandhi</span> and <span
+                    class="creator">Kahan Dave</span>
+            </footer>
+        </div>
+
+        <script>
+            let currentFormat = 'decimal';
+            let PAGE_SIZE = 4096; // Will be updated from user input
+            let TOTAL_FRAMES = 8; // Will be updated from user input
+            let pageTable = []; // Will be initialized based on user input
+
+            function initializePagingTable() {
+                // Get values from input fields
+                PAGE_SIZE = parseInt(document.getElementById('frameSize').value);
+                TOTAL_FRAMES = parseInt(document.getElementById('totalFrames').value);
+                const totalPages = parseInt(document.getElementById('totalPages').value);
+                const initialMappingsStr = document.getElementById('initialMappings').value;
+
+                // Validate inputs
+                if (PAGE_SIZE < 1024 || PAGE_SIZE % 1024 !== 0) {
+                    showConfigMessage("Frame size must be at least 1024 bytes and a multiple of 1024", true);
+                    return;
+                }
+
+                if (TOTAL_FRAMES < 1 || TOTAL_FRAMES > 16) {
+                    showConfigMessage("Total frames must be between 1 and 16", true);
+                    return;
+                }
+
+                if (totalPages < 1 || totalPages > 32) {
+                    showConfigMessage("Total pages must be between 1 and 32", true);
+                    return;
+                }
+
+                // Parse initial mappings
+                let initialMappings;
+                try {
+                    initialMappings = initialMappingsStr.split(',').map(pair => {
+                        const [page, frame] = pair.trim().split(':').map(Number);
+                        if (isNaN(page) || isNaN(frame)) {
+                            throw new Error('Invalid mapping format');
+                        }
+                        return { page, frame };
+                    });
+                } catch (error) {
+                    showConfigMessage("Invalid initial mappings format. Use comma-separated pairs like '0:2,1:1,2:6'", true);
+                    return;
+                }
+
+                // Validate mappings
+                const mappingErrors = validateMappings(initialMappings, totalPages, TOTAL_FRAMES);
+                if (mappingErrors.length > 0) {
+                    showConfigMessage(mappingErrors.join('\n'), true);
+                    return;
+                }
+
+                // Initialize page table
+                pageTable = new Array(totalPages).fill().map((_, i) => ({
+                    virtualPage: i,
+                    frameNumber: 'X'
+                }));
+
+                // Set initial mappings
+                initialMappings.forEach(({ page, frame }) => {
+                    pageTable[page].frameNumber = frame;
+                });
+
+                // Update valid address range after initialization
+                updateValidAddressRange();
+
+                // Update display and show success message
+                updateConfigDisplay();
+                updateTables();
+                showConfigMessage("Paging table initialized successfully!");
+            }
+
+            function setNumberFormat(format) {
+                currentFormat = format;
+                const toggleBtns = document.querySelectorAll('.toggle-btn');
+                toggleBtns.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+
+                // Update address input if it has a value
+                const addressInput = document.getElementById('address');
+                if (addressInput.value) {
+                    let value;
+                    if (format === 'binary') {
+                        // Convert decimal to binary
+                        value = parseInt(addressInput.value).toString(2).padStart(16, '0');
+                    } else {
+                        // Convert binary to decimal
+                        value = addressInput.value.length === 16 ?
+                            parseInt(addressInput.value, 2).toString() :
+                            addressInput.value;
+                    }
+                    addressInput.value = value;
+                }
+
+                // Update valid range display
+                updateValidAddressRange();
+                updateTables();
+            }
+
+
+            function convertToDecimal(value) {
+                if (currentFormat === 'binary') {
+                    return parseInt(value, 2);
+                }
+                return parseInt(value);
+            }
+
+            function formatNumber(number) {
+                if (currentFormat === 'binary') {
+                    return number.toString(2).padStart(16, '0');
+                }
+                return number.toString();
+            }
+
+            function setupInputListener() {
+                const addressInput = document.getElementById('address');
+                addressInput.addEventListener('input', function () {
+                    document.getElementById('pageFaultNotification').classList.remove('show');
+                    document.getElementById('resultMessage').classList.remove('show');
+                });
+            }
+
+            function showCalculations(address, pageNumber, offset) {
+                const calculationsSection = document.getElementById('calculationsSection');
+                const decimalCalc = document.getElementById('decimalCalculation');
+                const binaryCalc = document.getElementById('binaryCalculation');
+
+                calculationsSection.classList.add('show');
+                const calculationMethods = document.querySelector('.calculation-methods');
+                calculationMethods.style.gridTemplateColumns = '1fr';
+
+                const pageTableEntry = pageTable[pageNumber];
+                const physicalAddress = pageTableEntry.frameNumber !== 'X' ?
+                    (pageTableEntry.frameNumber * PAGE_SIZE) + offset : null;
+
+                if (currentFormat === 'decimal') {
+                    decimalCalc.parentElement.style.display = 'block';
+                    binaryCalc.parentElement.style.display = 'none';
+
+                    decimalCalc.innerHTML = `
                     <div class="calculation-steps">
                         <div class="calculation-step">
                             <div class="step-label">Virtual Address:</div>
@@ -1698,18 +1425,18 @@
                         `}
                     </div>
                 `;
-            } else {
-                decimalCalc.parentElement.style.display = 'none';
-                binaryCalc.parentElement.style.display = 'block';
+                } else {
+                    decimalCalc.parentElement.style.display = 'none';
+                    binaryCalc.parentElement.style.display = 'block';
 
-                const binaryAddress = address.toString(2).padStart(16, '0');
-                const pageBits = Math.log2(PAGE_SIZE);
-                const pageNumberBits = binaryAddress.slice(0, -pageBits);
-                const offsetBits = binaryAddress.slice(-pageBits);
-                const physicalAddressBinary = physicalAddress !== null ?
-                    physicalAddress.toString(2).padStart(16, '0') : null;
+                    const binaryAddress = address.toString(2).padStart(16, '0');
+                    const pageBits = Math.log2(PAGE_SIZE);
+                    const pageNumberBits = binaryAddress.slice(0, -pageBits);
+                    const offsetBits = binaryAddress.slice(-pageBits);
+                    const physicalAddressBinary = physicalAddress !== null ?
+                        physicalAddress.toString(2).padStart(16, '0') : null;
 
-                binaryCalc.innerHTML = `
+                    binaryCalc.innerHTML = `
                     <div class="calculation-steps">
                         <div class="calculation-step">
                             <div class="step-label">Binary Address:</div>
@@ -1759,121 +1486,121 @@
                         `}
                     </div>
                 `;
-            }
-        }
-
-        function processAddress() {
-            const addressInput = document.getElementById('address').value;
-            const address = convertToDecimal(addressInput);
-
-            if (isNaN(address) || address < 0 || address > (pageTable.length * PAGE_SIZE - 1)) {
-                showError(`Please enter a valid address (0-${pageTable.length * PAGE_SIZE - 1} in ${currentFormat} format)`);
-                return;
+                }
             }
 
-            const pageNumber = Math.floor(address / PAGE_SIZE);
-            const offset = address % PAGE_SIZE;
-            const pageTableEntry = pageTable[pageNumber];
+            function processAddress() {
+                const addressInput = document.getElementById('address').value;
+                const address = convertToDecimal(addressInput);
 
-            // Show calculations
-            showCalculations(address, pageNumber, offset);
+                if (isNaN(address) || address < 0 || address > (pageTable.length * PAGE_SIZE - 1)) {
+                    showError(`Please enter a valid address (0-${pageTable.length * PAGE_SIZE - 1} in ${currentFormat} format)`);
+                    return;
+                }
 
-            if (pageTableEntry.frameNumber === 'X') {
-                document.getElementById('pageFaultNotification').classList.add('show');
-                showError(`Page Fault: Page ${pageNumber} is not in memory`);
-            } else {
-                const physicalAddress = (pageTableEntry.frameNumber * PAGE_SIZE) + offset;
-                showSuccess(`Virtual Address ${formatNumber(address)} → Physical Address ${formatNumber(physicalAddress)}`);
+                const pageNumber = Math.floor(address / PAGE_SIZE);
+                const offset = address % PAGE_SIZE;
+                const pageTableEntry = pageTable[pageNumber];
+
+                // Show calculations
+                showCalculations(address, pageNumber, offset);
+
+                if (pageTableEntry.frameNumber === 'X') {
+                    document.getElementById('pageFaultNotification').classList.add('show');
+                    showError(`Page Fault: Page ${pageNumber} is not in memory`);
+                } else {
+                    const physicalAddress = (pageTableEntry.frameNumber * PAGE_SIZE) + offset;
+                    showSuccess(`Virtual Address ${formatNumber(address)} → Physical Address ${formatNumber(physicalAddress)}`);
+                }
+
+                updateTables();
+                highlightMapping(pageNumber);
             }
 
-            updateTables();
-            highlightMapping(pageNumber);
-        }
-
-        function updateTables() {
-            const virtualTableBody = document.querySelector('#virtualTable tbody');
-            virtualTableBody.innerHTML = pageTable.map((entry, i) => `
+            function updateTables() {
+                const virtualTableBody = document.querySelector('#virtualTable tbody');
+                virtualTableBody.innerHTML = pageTable.map((entry, i) => `
                 <tr id="virtual-row-${i}">
                     <td>${formatNumber(i * PAGE_SIZE)}-${formatNumber((i + 1) * PAGE_SIZE - 1)}</td>
                     <td>${entry.frameNumber}</td>
                 </tr>
             `).join('');
 
-            const physicalTableBody = document.querySelector('#physicalTable tbody');
-            physicalTableBody.innerHTML = Array(TOTAL_FRAMES).fill().map((_, i) => `
+                const physicalTableBody = document.querySelector('#physicalTable tbody');
+                physicalTableBody.innerHTML = Array(TOTAL_FRAMES).fill().map((_, i) => `
                 <tr id="physical-row-${i}">
                     <td>${i}</td>
                     <td>${formatNumber(i * PAGE_SIZE)}-${formatNumber((i + 1) * PAGE_SIZE - 1)}</td>
                 </tr>
             `).join('');
-        }
-
-        function highlightMapping(pageNumber) {
-            document.querySelectorAll('tr').forEach(row => {
-                row.classList.remove('highlighted');
-            });
-
-            const virtualRow = document.getElementById(`virtual-row-${pageNumber}`);
-            if (virtualRow) {
-                virtualRow.classList.add('highlighted');
             }
 
-            const frameNumber = pageTable[pageNumber].frameNumber;
-            if (frameNumber !== 'X') {
-                const physicalRow = document.getElementById(`physical-row-${frameNumber}`);
-                if (physicalRow) {
-                    physicalRow.classList.add('highlighted');
+            function highlightMapping(pageNumber) {
+                document.querySelectorAll('tr').forEach(row => {
+                    row.classList.remove('highlighted');
+                });
+
+                const virtualRow = document.getElementById(`virtual-row-${pageNumber}`);
+                if (virtualRow) {
+                    virtualRow.classList.add('highlighted');
+                }
+
+                const frameNumber = pageTable[pageNumber].frameNumber;
+                if (frameNumber !== 'X') {
+                    const physicalRow = document.getElementById(`physical-row-${frameNumber}`);
+                    if (physicalRow) {
+                        physicalRow.classList.add('highlighted');
+                    }
                 }
             }
-        }
 
-        function showError(message) {
-            const resultMessage = document.getElementById('resultMessage');
-            resultMessage.className = 'result-message error show';
-            resultMessage.innerHTML = `
+            function showError(message) {
+                const resultMessage = document.getElementById('resultMessage');
+                resultMessage.className = 'result-message error show';
+                resultMessage.innerHTML = `
                 <div class="result-message-content">
                     <strong>Error!</strong><br>
                     ${message}
                 </div>
             `;
 
-            setTimeout(() => {
-                resultMessage.classList.remove('show');
                 setTimeout(() => {
-                    resultMessage.innerHTML = '';
-                }, 300);
-            }, 3000);
-        }
+                    resultMessage.classList.remove('show');
+                    setTimeout(() => {
+                        resultMessage.innerHTML = '';
+                    }, 300);
+                }, 3000);
+            }
 
-        function showSuccess(message) {
-            const resultMessage = document.getElementById('resultMessage');
-            resultMessage.className = 'result-message success show';
-            resultMessage.innerHTML = `
+            function showSuccess(message) {
+                const resultMessage = document.getElementById('resultMessage');
+                resultMessage.className = 'result-message success show';
+                resultMessage.innerHTML = `
                 <div class="result-message-content">
                     <strong>Success!</strong><br>
                     ${message}
                 </div>
             `;
 
-            setTimeout(() => {
-                resultMessage.classList.remove('show');
                 setTimeout(() => {
-                    resultMessage.innerHTML = '';
-                }, 300);
-            }, 3000);
-        }
+                    resultMessage.classList.remove('show');
+                    setTimeout(() => {
+                        resultMessage.innerHTML = '';
+                    }, 300);
+                }, 3000);
+            }
 
-        function updateConfigDisplay() {
-            document.getElementById('displayFrameSize').textContent = `${PAGE_SIZE} bytes`;
-            document.getElementById('displayTotalFrames').textContent = TOTAL_FRAMES;
-            document.getElementById('displayTotalPages').textContent = pageTable.length;
+            function updateConfigDisplay() {
+                document.getElementById('displayFrameSize').textContent = `${PAGE_SIZE} bytes`;
+                document.getElementById('displayTotalFrames').textContent = TOTAL_FRAMES;
+                document.getElementById('displayTotalPages').textContent = pageTable.length;
 
-            const mappingsContainer = document.getElementById('displayMappings');
-            mappingsContainer.innerHTML = '';
+                const mappingsContainer = document.getElementById('displayMappings');
+                mappingsContainer.innerHTML = '';
 
-            const mappings = pageTable
-                .filter(entry => entry.frameNumber !== 'X')
-                .map(entry => `
+                const mappings = pageTable
+                    .filter(entry => entry.frameNumber !== 'X')
+                    .map(entry => `
                     <div class="mapping-pair">
                         <span class="mapping-page">Page ${entry.virtualPage}</span>
                         <span class="mapping-arrow">→</span>
@@ -1881,81 +1608,81 @@
                     </div>
                 `).join('');
 
-            mappingsContainer.innerHTML = mappings || '<div class="mapping-pair">No mappings</div>';
-        }
-
-        function validateMappings(initialMappings, totalPages, totalFrames) {
-            const errors = [];
-            const usedFrames = new Set();
-
-            initialMappings.forEach(({ page, frame }) => {
-                if (page < 0 || page >= totalPages) {
-                    errors.push(`Invalid page number: ${page}. Must be between 0 and ${totalPages - 1}`);
-                }
-                if (frame < 0 || frame >= totalFrames) {
-                    errors.push(`Invalid frame number: ${frame}. Must be between 0 and ${totalFrames - 1}`);
-                }
-                if (usedFrames.has(frame)) {
-                    errors.push(`Duplicate frame mapping: Frame ${frame} is mapped to multiple pages`);
-                }
-                usedFrames.add(frame);
-            });
-
-            return errors;
-        }
-
-        function showConfigMessage(message, isError = false) {
-            const configSection = document.querySelector('.configuration-section');
-            const existingMessage = configSection.querySelector('.config-message');
-            if (existingMessage) {
-                existingMessage.remove();
+                mappingsContainer.innerHTML = mappings || '<div class="mapping-pair">No mappings</div>';
             }
 
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `config-message ${isError ? 'config-error' : 'config-success'}`;
-            messageDiv.textContent = message;
-            configSection.appendChild(messageDiv);
+            function validateMappings(initialMappings, totalPages, totalFrames) {
+                const errors = [];
+                const usedFrames = new Set();
 
-            // Only show success message for manual initialization
-            if (!isError) {
-                setTimeout(() => messageDiv.remove(), 3000);
+                initialMappings.forEach(({ page, frame }) => {
+                    if (page < 0 || page >= totalPages) {
+                        errors.push(`Invalid page number: ${page}. Must be between 0 and ${totalPages - 1}`);
+                    }
+                    if (frame < 0 || frame >= totalFrames) {
+                        errors.push(`Invalid frame number: ${frame}. Must be between 0 and ${totalFrames - 1}`);
+                    }
+                    if (usedFrames.has(frame)) {
+                        errors.push(`Duplicate frame mapping: Frame ${frame} is mapped to multiple pages`);
+                    }
+                    usedFrames.add(frame);
+                });
+
+                return errors;
             }
-        }
 
-        function updateValidAddressRange() {
-            const maxAddress = pageTable.length * PAGE_SIZE - 1;
-            const rangeDisplay = document.getElementById('validRange');
-            if (currentFormat === 'binary') {
-                rangeDisplay.innerHTML = `<span>0000000000000000</span> to <span>${maxAddress.toString(2).padStart(16, '0')}</span>`;
-            } else {
-                rangeDisplay.innerHTML = `<span>0</span> to <span>${maxAddress}</span>`;
+            function showConfigMessage(message, isError = false) {
+                const configSection = document.querySelector('.configuration-section');
+                const existingMessage = configSection.querySelector('.config-message');
+                if (existingMessage) {
+                    existingMessage.remove();
+                }
+
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `config-message ${isError ? 'config-error' : 'config-success'}`;
+                messageDiv.textContent = message;
+                configSection.appendChild(messageDiv);
+
+                // Only show success message for manual initialization
+                if (!isError) {
+                    setTimeout(() => messageDiv.remove(), 3000);
+                }
             }
-        }
 
-        function generateValidAddress() {
-            const maxAddress = pageTable.length * PAGE_SIZE - 1;
-            const pageNumber = Math.floor(Math.random() * pageTable.length);
-            const offset = Math.floor(Math.random() * PAGE_SIZE);
-            const address = (pageNumber * PAGE_SIZE) + offset;
+            function updateValidAddressRange() {
+                const maxAddress = pageTable.length * PAGE_SIZE - 1;
+                const rangeDisplay = document.getElementById('validRange');
+                if (currentFormat === 'binary') {
+                    rangeDisplay.innerHTML = `<span>0000000000000000</span> to <span>${maxAddress.toString(2).padStart(16, '0')}</span>`;
+                } else {
+                    rangeDisplay.innerHTML = `<span>0</span> to <span>${maxAddress}</span>`;
+                }
+            }
 
-            // Remove any existing notifications
-            document.getElementById('pageFaultNotification').classList.remove('show');
-            document.getElementById('resultMessage').classList.remove('show');
+            function generateValidAddress() {
+                const maxAddress = pageTable.length * PAGE_SIZE - 1;
+                const pageNumber = Math.floor(Math.random() * pageTable.length);
+                const offset = Math.floor(Math.random() * PAGE_SIZE);
+                const address = (pageNumber * PAGE_SIZE) + offset;
 
-            document.getElementById('address').value = currentFormat === 'decimal' ?
-                address.toString() :
-                address.toString(2).padStart(16, '0');
-        }
+                // Remove any existing notifications
+                document.getElementById('pageFaultNotification').classList.remove('show');
+                document.getElementById('resultMessage').classList.remove('show');
 
-        // Initialize without showing success message
-        function initialSetup() {
-            initializePagingTable();
-            setupInputListener();
-        }
+                document.getElementById('address').value = currentFormat === 'decimal' ?
+                    address.toString() :
+                    address.toString(2).padStart(16, '0');
+            }
 
-        // Call initialSetup instead of initializePagingTable
-        initialSetup();
-    </script>
-</body>
+            // Initialize without showing success message
+            function initialSetup() {
+                initializePagingTable();
+                setupInputListener();
+            }
+
+            // Call initialSetup instead of initializePagingTable
+            initialSetup();
+        </script>
+    </body>
 
 </html>
