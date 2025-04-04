@@ -28,7 +28,6 @@ A web-based simulation tool for understanding memory paging in operating systems
 ## Technologies Used
 
 - HTML5
-- CSS3
 - JavaScript
 - Modern CSS features (CSS Variables, Flexbox, Grid)
 - Responsive Design
