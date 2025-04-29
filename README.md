@@ -35,6 +35,7 @@ A web-based simulation tool for understanding memory paging in operating systems
 ## Contributors
 
 - Urva Gandhi
+- Krisha Antala
 
 ## License
 
